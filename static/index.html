@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Record Exporter</title>
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+  <header class="app-header">
+    <div class="container">
+      <h1>Record Exporter</h1>
+      <p class="subtitle">Upload an Excel workbook, inspect records with live page details, and export as Excel, CSV, JSON, or PDF.</p>
+    </div>
+  </header>
+
+  <main class="container main-content">
+    <!-- Step 1: Upload -->
+    <section class="panel" id="step-upload">
+      <div class="panel-header">
+        <span class="step-badge">Step 1</span>
+        <h2>Upload Excel File</h2>
+      </div>
+
+      <div class="drop-zone" id="drop-zone" tabindex="0" role="button" aria-label="Upload Excel file">
+        <input type="file" id="file-input" accept=".xlsx,.xls" hidden />
+        <div class="drop-zone-content">
+          <div class="drop-icon" aria-hidden="true">&#128196;</div>
+          <p class="drop-title">Drag and drop your <strong>.xlsx</strong> or <strong>.xls</strong> file here</p>
+          <p class="drop-hint">or <button type="button" class="link-btn" id="browse-btn">browse from your computer</button> (max 10 MB)</p>
+        </div>
+      </div>
+
+      <div class="status-banner error hidden" id="upload-error" role="alert"></div>
+      <div class="status-banner info hidden" id="upload-loading">Uploading and reading workbook...</div>
+
+      <div class="workbook-summary hidden" id="workbook-summary">
+        <div class="meta-grid">
+          <div class="meta-item">
+            <span class="meta-label">File name</span>
+            <span class="meta-value" id="meta-filename"></span>
+          </div>
+          <div class="meta-item">
+            <label class="meta-label" for="sheet-select">Sheet</label>
+            <select id="sheet-select" class="select-input"></select>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Total records</span>
+            <span class="meta-value badge-count" id="meta-total-records">0</span>
+          </div>
+        </div>
+
+        <div class="preview-block">
+          <h3>Preview (first 5 rows)</h3>
+          <div class="table-scroll" id="preview-table-wrap"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Step 2 & 3: Link column & Record selection -->
+    <section class="panel hidden" id="step-configure">
+      <div class="config-grid">
+        <div class="config-block">
+          <div class="panel-header">
+            <span class="step-badge">Step 2</span>
+            <h2>Link Column</h2>
+          </div>
+          <p class="field-help">Used to fetch extra details from each record's web page.</p>
+          <select id="link-column-select" class="select-input"></select>
+        </div>
+
+        <div class="config-block">
+          <div class="panel-header">
+            <span class="step-badge">Step 3</span>
+            <h2>Choose Records</h2>
+          </div>
+          <p class="field-help">Examples: <code>1,2,3</code>, <code>1-5</code>, <code>1,3-6</code>, or <code>all</code> (max 200).</p>
+          <form id="selection-form" class="selection-row">
+            <input
+              type="text"
+              id="selection-input"
+              class="text-input"
+              placeholder="e.g. 1,2 or 1-5 or all"
+              autocomplete="off"
+            />
+            <button type="submit" class="btn btn-primary" id="show-records-btn">Show records</button>
+          </form>
+          <div class="status-banner error hidden" id="selection-error" role="alert"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Step 5 (sticky actions bar once records are shown) -->
+    <section class="panel hidden" id="step-download">
+      <div class="download-bar">
+        <div>
+          <div class="panel-header compact">
+            <span class="step-badge">Step 5</span>
+            <h2>Download Selected Records</h2>
+          </div>
+          <p class="field-help" id="download-hint"></p>
+        </div>
+        <div class="download-actions">
+          <button type="button" class="btn btn-export" data-format="xlsx">Excel</button>
+          <button type="button" class="btn btn-export" data-format="csv">CSV</button>
+          <button type="button" class="btn btn-export" data-format="json">JSON</button>
+          <button type="button" class="btn btn-export" data-format="pdf">PDF</button>
+        </div>
+      </div>
+      <div class="status-banner info hidden" id="download-loading">Preparing download...</div>
+      <div class="status-banner error hidden" id="download-error" role="alert"></div>
+    </section>
+
+    <!-- Step 4: Record Cards -->
+    <section class="hidden" id="step-records">
+      <div class="records-header">
+        <div class="panel-header compact">
+          <span class="step-badge">Step 4</span>
+          <h2>Selected Records</h2>
+        </div>
+        <div class="progress-wrap hidden" id="fetch-progress-wrap">
+          <span class="progress-text" id="fetch-progress-text">Fetching 0 of 0</span>
+          <div class="progress-track">
+            <div class="progress-fill" id="fetch-progress-fill" style="width: 0%"></div>
+          </div>
+        </div>
+      </div>
+      <div id="records-container" class="records-list"></div>
+    </section>
+  </main>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
